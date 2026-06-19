@@ -1,0 +1,28 @@
+{
+  "backend": {
+    "api_url": "",
+    "device_token": "",
+    "source_device": "ruangan-icu",
+    "pending_file": "pending/pending.jsonl"
+  },
+  "desktop": {
+    "username": "admin",
+    "password": "admin"
+  },
+  "detection": {
+    "eye_closed_threshold": 15,
+    "eye_closed_secs_1": 15,
+    "eye_closed_secs_2": 30,
+    "eye_open_reset_secs": 0.4,
+    "min_confidence": 0.8
+  },
+  "yawn": {
+    "limit": 3,
+    "time_window": 60,
+    "frame_threshold": 5
+  },
+  "event": {
+    "backend_url": "",
+    "backend_token": ""
+  }
+}
