@@ -1,0 +1,31 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+
+# PyInstaller build output
+build/
+dist/
+*.zip
+SHA256SUM.txt
+
+# Runtime data (created automatically; do NOT ship user data)
+storage/logs/
+storage/pending/
+storage/screenshots/
+storage/videos/
+storage/cache/
+logs/
+pending/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Keep these tracked (needed for the Windows build):
+#   models/*.h5      assets/*      config/config.json
+!models/
+!assets/
+!config/config.json

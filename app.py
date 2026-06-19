@@ -18,6 +18,8 @@ from services.backend_service import BackendService
 from services.config_service import ConfigService
 from services.detection_service import DetectionEngine
 from services.event_service import EventService
+from services.logging_setup import setup_logging
+from services.paths import ensure_storage
 from services.theme_manager import apply_theme
 from ui.icons import app_icon
 from ui.main_window import MainWindow
@@ -28,6 +30,11 @@ from viewmodels.detection_viewmodel import DetectionViewModel
 def main() -> int:
     app = QApplication(sys.argv)
     app.setWindowIcon(app_icon())
+
+    # --- startup: create storage folders + logging, then load config ---
+    ensure_storage()
+    logger = setup_logging()
+    logger.info("Starting Fatigue Mitigation System")
 
     # --- services (config loaded immediately; model loaded on splash) ---
     config = ConfigService()

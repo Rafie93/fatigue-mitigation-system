@@ -1,0 +1,102 @@
+name: Windows Build
+
+# Builds the Fatigue Mitigation System into a Windows .exe distribution.
+# Push to main -> build + upload artifact. Push a v* tag -> also create a Release.
+
+on:
+  push:
+    branches: [main]
+    tags: ["v*"]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Python 3.12 (x64)
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          architecture: x64
+
+      - name: Verify AI models are present
+        shell: pwsh
+        run: |
+          $models = @("models/model_eye_mobilenet.h5", "models/model_mouth_mobilenet.h5")
+          $missing = $models | Where-Object { -not (Test-Path $_) }
+          if ($missing) {
+            Write-Error "Missing AI model(s): $($missing -join ', '). Commit them (or provide via LFS) before building."
+            exit 1
+          }
+          Write-Host "AI models present."
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements-build.txt
+
+      - name: Run tests
+        run: python tools/ci_smoke.py
+
+      - name: Stamp version.json
+        shell: pwsh
+        run: |
+          $ver = "${{ github.ref_name }}"
+          if ($ver -notmatch '^v\d') { $ver = "" }
+          python tools/gen_version.py "$ver" "${{ github.run_number }}"
+
+      - name: Build with PyInstaller (--onedir)
+        run: pyinstaller --noconfirm --clean FaigueMitigation.spec
+
+      - name: Assemble distribution folder
+        shell: pwsh
+        run: |
+          $dist = "dist/FaigueMitigation"
+          Copy-Item -Recurse -Force models "$dist/models"
+          Copy-Item -Recurse -Force assets "$dist/assets"
+          New-Item -ItemType Directory -Force -Path "$dist/config" | Out-Null
+          Copy-Item -Force config/config.json "$dist/config/config.json"
+          foreach ($d in 'logs','pending','screenshots','videos','cache') {
+            New-Item -ItemType Directory -Force -Path "$dist/storage/$d" | Out-Null
+            New-Item -ItemType File -Force -Path "$dist/storage/$d/.keep" | Out-Null
+          }
+          Copy-Item -Force README.txt, LICENSE, CHANGELOG.md, version.json $dist
+
+      - name: Validate build output
+        run: python tools/validate_build.py dist/FaigueMitigation
+
+      - name: Package zip + checksum
+        shell: pwsh
+        run: |
+          $ver = (Get-Content version.json | ConvertFrom-Json).version
+          $name = "FaigueMitigation_v${ver}_Windows_x64"
+          "ARTIFACT_NAME=$name" | Out-File -FilePath $env:GITHUB_ENV -Append -Encoding ascii
+          Compress-Archive -Path "dist/FaigueMitigation/*" -DestinationPath "$name.zip" -Force
+          $hash = (Get-FileHash "$name.zip" -Algorithm SHA256).Hash
+          "$hash  $name.zip" | Out-File -Encoding ascii SHA256SUM.txt
+          Write-Host "Built $name.zip ($hash)"
+
+      - name: Upload build artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ env.ARTIFACT_NAME }}
+          path: |
+            ${{ env.ARTIFACT_NAME }}.zip
+            SHA256SUM.txt
+          if-no-files-found: error
+
+      - name: Create GitHub Release (on tag)
+        if: startsWith(github.ref, 'refs/tags/v')
+        uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            ${{ env.ARTIFACT_NAME }}.zip
+            SHA256SUM.txt
+          body_path: CHANGELOG.md

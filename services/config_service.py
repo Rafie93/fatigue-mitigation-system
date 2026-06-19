@@ -12,7 +12,7 @@ DEFAULT_CONFIG = {
         "api_url": "",
         "device_token": "",
         "source_device": "raspberrypi-01",
-        "pending_file": "pending/pending.jsonl",
+        "pending_file": "storage/pending/pending.jsonl",
     },
     "desktop": {
         "username": "admin",

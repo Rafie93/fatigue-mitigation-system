@@ -1,0 +1,4 @@
+# Build-time dependencies (Windows packaging).
+-r requirements.txt
+pyinstaller==6.20.0
+pillow>=10.0

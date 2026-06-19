@@ -14,7 +14,7 @@ import cv2
 
 from PySide6.QtCore import QObject, Signal
 
-from services.paths import writable_path
+from services.paths import PENDING_DIR, writable_path
 
 EVENT_COOLDOWN_SECONDS = 30
 PENDING_FLUSH_INTERVAL_SECONDS = 15
@@ -45,8 +45,8 @@ class EventService(QObject):
         if configured:
             if os.path.isabs(configured):
                 return configured
-            return writable_path(*configured.split("/"))
-        return writable_path("pending", "pending.jsonl")
+            return writable_path(*configured.replace("\\", "/").split("/"))
+        return os.path.join(PENDING_DIR, "pending.jsonl")
 
     # ------------------------------------------------------------- build
     def _build_payload(self, event: dict, image_b64: str | None) -> dict:

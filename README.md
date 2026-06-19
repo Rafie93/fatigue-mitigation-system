@@ -72,3 +72,7 @@ Setelah stabil, paketkan menjadi executable dengan PyInstaller, sertakan folder
 pyinstaller --noconfirm --windowed --name FatigueDesktop \
   --add-data "models:models" app.py
 ```
+
+<!-- ADD IMAGE SAMPLE THIS FROM ASSET ss.png -->
+## RESULT RUN DETECTTION
+![image](https://github.com/Rafie93/fatigue-mitigation-system/tree/main/assets/ss.png)
