@@ -7,7 +7,7 @@
   },
   "desktop": {
     "username": "admin",
-    "password": "admin"
+    "password": ""
   },
   "detection": {
     "eye_closed_threshold": 15,
@@ -24,5 +24,27 @@
   "event": {
     "backend_url": "",
     "backend_token": ""
+  },
+  "camera": {
+    "camera_type": "integrated",
+    "camera_index": 0,
+    "camera_url": "",
+    "auto_refresh": true
+  },
+  "recording": {
+    "enabled": true,
+    "duration": 30,
+    "buffer_seconds": 10
+  },
+  "screenshot": {
+    "enabled": true,
+    "overlay": true
+  },
+  "theme": {
+    "mode": "dark"
+  },
+  "tray": {
+    "enabled": true,
+    "start_minimized": false
   }
 }

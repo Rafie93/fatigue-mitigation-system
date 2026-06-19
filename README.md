@@ -1,19 +1,33 @@
 # Fatigue Detection System — Desktop
 
 Aplikasi desktop (PySide6) untuk mendeteksi kantuk pengemudi secara real-time
-menggunakan model Deep Learning **MobileNetV2** (mata + mulut). Dibangun
-mengikuti PRD v1.1 dengan arsitektur **MVVM**.
+menggunakan model Deep Learning **MobileNetV2** (mata + mulut). Dibangun dengan arsitektur **MVVM**.
 
-## Fitur
+## Fitur (v1.1)
 
 - Splash screen dengan loading model AI di background thread
 - Home Dashboard (status Kamera / Backend / AI Model / Device / Pending Events)
 - Detection Window dengan live preview di dalam GUI (QLabel) + overlay status
-- Configuration Manager (5 kategori) tersimpan ke `config/config.json`
+- Configuration Manager tersimpan ke `config/config.json`
 - Event History (Micro Sleep / Fatigue / Yawn)
 - Pengiriman event ke backend REST + penyimpanan **pending** saat offline + retry otomatis
 - Status bar (Camera, Backend, FPS, CPU, RAM)
 - Kamera **tidak aktif** saat aplikasi dibuka — hanya aktif setelah **Start Camera**
+
+## Fitur Baru (v1.2)
+
+- **Multi Camera Support** — deteksi semua kamera, pilih dari dropdown di Home /
+  Settings, tombol **Refresh Camera**, ganti kamera tanpa restart (saat idle)
+- **Multiple Camera Types** — Integrated / USB / Virtual / **RTSP** / **HTTP MJPEG**
+  (set tipe + URL di Settings → Camera)
+- **Automatic Event Video Recording** — circular buffer (10 dtk sebelum +
+  20 dtk sesudah event) → `storage/videos/<tanggal>/`
+- **Automatic Screenshot** — snapshot dengan overlay (time/status/camera/event/confidence)
+  → `storage/screenshots/<tanggal>/`
+- **Theme Manager** — Light / Dark / Follow System, berubah tanpa restart
+- **System Tray** — tutup window = tetap berjalan di background; menu tray
+  (Open / Start / Stop / Settings / History / About / Exit) + notifikasi alert.
+  Keluar hanya via **Tray → Exit**
 
 ## Struktur
 
@@ -31,7 +45,12 @@ FatigueDesktop/
 ├── models/                 # model_eye_mobilenet.h5, model_mouth_mobilenet.h5
 ├── config/config.json      # konfigurasi tersimpan
 ├── pending/  logs/  assets/
+└── storage/                # v1.2 — screenshots/  videos/  cache/
 ```
+
+Service v1.2 tambahan: `camera_discovery.py` (scan & build sumber kamera),
+`recorder_service.py` (VideoRecorder circular buffer + ScreenshotSaver),
+`theme_manager.py` (light/dark/system).
 
 ## Menjalankan (development)
 
