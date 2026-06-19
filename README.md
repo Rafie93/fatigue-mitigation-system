@@ -75,4 +75,4 @@ pyinstaller --noconfirm --windowed --name FatigueDesktop \
 
 <!-- ADD IMAGE SAMPLE THIS FROM ASSET ss.png -->
 ## RESULT RUN DETECTTION
-![image](https://github.com/Rafie93/fatigue-mitigation-system/tree/main/assets/ss.png)
+![image](https://github.com/Rafie93/fatigue-mitigation-system/blob/main/assets/ss.png)
